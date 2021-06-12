@@ -337,4 +337,6 @@ pub enum ThreadStopReason<U> {
         /// The location the event occured at.
         position: CatchSyscallPosition,
     },
+    /// Custom
+    Custom,
 }

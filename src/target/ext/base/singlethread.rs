@@ -248,4 +248,6 @@ pub enum StopReason<U> {
         /// The location the event occured at.
         position: CatchSyscallPosition,
     },
+    /// Custom
+    Custom,
 }

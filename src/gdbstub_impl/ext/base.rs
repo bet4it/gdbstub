@@ -741,6 +741,7 @@ impl<T: Target, C: Connection> GdbStubImpl<T, C> {
 
                 HandlerStatus::Handled
             }
+            ThreadStopReason::Custom => HandlerStatus::Disconnect(DisconnectReason::Custom),
             _ => return Err(Error::UnsupportedStopReason),
         };
 
@@ -768,6 +769,7 @@ impl<U> From<StopReason<U>> for ThreadStopReason<U> {
             StopReason::CatchSyscall { number, position } => {
                 ThreadStopReason::CatchSyscall { number, position }
             }
+            StopReason::Custom => ThreadStopReason::Custom,
         }
     }
 }

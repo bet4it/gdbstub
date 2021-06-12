@@ -30,6 +30,8 @@ pub enum DisconnectReason {
     Disconnect,
     /// GDB issued a kill command
     Kill,
+    /// Custom
+    Custom,
 }
 
 /// Debug a [`Target`] using the GDB Remote Serial Protocol over a given
@@ -155,7 +157,9 @@ impl<T: Target, C: Connection> GdbStubImpl<T, C> {
                     };
 
                     // HACK: this could be more elegant...
-                    if disconnect != Some(DisconnectReason::Kill) {
+                    if disconnect != Some(DisconnectReason::Kill)
+                        && disconnect != Some(DisconnectReason::Custom)
+                    {
                         res.flush()?;
                     }
 
