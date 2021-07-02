@@ -6,6 +6,7 @@ use gdbstub::target::ext::base::singlethread::{
     GdbInterrupt, ResumeAction, SingleThreadOps, SingleThreadReverseContOps,
     SingleThreadReverseStepOps, StopReason,
 };
+use gdbstub::target::ext::base::SendRegisterOutput;
 use gdbstub::target::ext::breakpoints::WatchKind;
 use gdbstub::target::{Target, TargetError, TargetResult};
 use gdbstub_arch::arm::reg::id::ArmCoreRegId;
@@ -228,24 +229,24 @@ impl target::ext::base::SingleRegisterAccess<()> for Emu {
         &mut self,
         _tid: (),
         reg_id: custom_arch::ArmCoreRegIdCustom,
-        dst: &mut [u8],
+        mut output: SendRegisterOutput,
     ) -> TargetResult<(), Self> {
         match reg_id {
             custom_arch::ArmCoreRegIdCustom::Core(reg_id) => {
                 if let Some(i) = cpu_reg_id(reg_id) {
                     let w = self.cpu.reg_get(self.cpu.mode(), i);
-                    dst.copy_from_slice(&w.to_le_bytes());
+                    output.write(&w.to_le_bytes());
                     Ok(())
                 } else {
                     Err(().into())
                 }
             }
             custom_arch::ArmCoreRegIdCustom::Custom => {
-                dst.copy_from_slice(&self.custom_reg.to_le_bytes());
+                output.write(&self.custom_reg.to_le_bytes());
                 Ok(())
             }
             custom_arch::ArmCoreRegIdCustom::Time => {
-                dst.copy_from_slice(
+                output.write(
                     &(std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
                         .unwrap()
